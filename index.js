@@ -3,7 +3,7 @@ const cors = require("cors");
 const RateLimit = require("express-rate-limit");
 
 const constants = require("./constants");
-// const userLogin = require("./user/login");
+const waybackMachine = require("./services/wayback");
 
 const app = express();
 app.use(express.json());
@@ -20,7 +20,7 @@ app.get(constants.endpoints.API_HOME, (req, res) => {
 	res.json({ endpoints: constants.endpoints });
 });
 
-// app.post(constants.endpoints.API_LOGIN, (req, res) => userLogin(req, res));
+app.get(constants.endpoints.API_WAYBACK, (req, res) => waybackMachine(req, res));
 
 app.set("json spaces", 4);
 app.listen(process.env.PORT || 3000, () => console.log("App launched!"));
