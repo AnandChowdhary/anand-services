@@ -13,3 +13,5 @@ Thanks to [Heroku](https://heroku.com/) for hosting these services for free. :sm
 This script returns a PNG containing the current date and time on the `/now.png` endpoint. This is useful to test HTTP proxies for caching. I'm using it to see how long GitHub caches images in the README for and how frequently it updates those images. Here's a demo:
 
 ![Date time image](https://anand-services.herokuapp.com/now.png)
+
+**Result:** If you set the right `Cache-Control: no-cache` and `eTag` headers (the latter Express generates for you), GitHub's camo service will also respect them and not cache your images.
