@@ -16,6 +16,7 @@ module.exports = (req, res) => {
 		PImage.encodePNGToStream(img1, writer)
 			.then(() => {
 				res.setHeader("content-type", "image/png");
+				res.set("Cache-Control", "no-cache");
 				res.send(writer.toBuffer());
 			})
 			.catch(e => {
