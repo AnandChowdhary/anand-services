@@ -10,6 +10,6 @@ Thanks to [Heroku](https://heroku.com/) for hosting these services for free. :sm
 
 ## `/services/dateimage`
 
-This script returns a PNG image containing the current date and time on the `/now.png` endpoint. This is useful to test HTTP proxies for caching. I'm using it to see how long GitHub caches images in the README for and how frequently it updates those images. Here's a demo:
+This script returns a PNG containing the current date and time on the `/now.png` endpoint. This is useful to test HTTP proxies for caching. I'm using it to see how long GitHub caches images in the README for and how frequently it updates those images. Here's a demo:
 
 ![Date time image](https://anand-services.herokuapp.com/now.png)
