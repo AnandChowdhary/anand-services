@@ -2,11 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const RateLimit = require("express-rate-limit");
 const constants = require("./constants");
+const crons = require("./crons");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.enable("trust proxy");
+crons();
 
 const limiter = new RateLimit({
 	windowMs: 60 * 1000, // 1 minute
