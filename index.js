@@ -22,6 +22,7 @@ app.get(constants.endpoints.API_HOME, (req, res) => {
 
 app.get(constants.endpoints.API_WAYBACK, (req, res) => require("./services/wayback")(req, res));
 app.get(constants.endpoints.API_DATEIMAGE, (req, res) => require("./services/dateimage")(req, res));
+app.get(constants.endpoints.API_GITLAB, (req, res) => require("./services/gitlab")(req, res));
 
 app.set("json spaces", 4);
 app.listen(process.env.PORT || 3000, () => console.log("App launched!"));
