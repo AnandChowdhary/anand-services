@@ -1,6 +1,6 @@
 const request = require("request");
 const dayjs = require("dayjs");
-const sha1 = require("sha1");
+const notify = require("../notify");
 
 const promiseSerial = funcs =>
 	funcs.reduce(
@@ -94,17 +94,10 @@ module.exports = (req, res) => {
 					previousSha = JSON.parse(body).sha;
 					promiseSerial(githubCommits)
 						.then(() => {
-							// Sends an IFTTT notification to my phone
-							request.post(
-								"https://maker.ifttt.com/trigger/notification_endpoint/with/key/cIslveLjbfBDQsMx1-toPLh1VpRquJBDLp8NCddG2wN",
-								{
-									json: true,
-									body: {
-										value1: "Completed CRON job ",
-										value2: "for GitLab; number of commits today: ",
-										value3: commits.length
-									}
-								}
+							notify(
+								"Completed CRON job " +
+									"for GitLab; number of commits today: " +
+									commits.length
 							);
 							console.log("Completed!");
 						})
