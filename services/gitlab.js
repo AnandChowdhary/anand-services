@@ -33,8 +33,9 @@ module.exports = (req, res) => {
 							commits.push({
 								message: `GitLab commit: ${push.push_data.commit_to} in ${
 									push.project_id
-								} by ${push.author.name} (@${push.author.username})`,
-								time: dayjs(push.created_at).add(i, "minute")
+								} by ${push.author.name} (@${push.author.username}) at ${dayjs(
+									push.created_at
+								).add(i, "minute")}`
 							});
 						}
 					}
@@ -93,6 +94,10 @@ module.exports = (req, res) => {
 					previousSha = JSON.parse(body).sha;
 					promiseSerial(githubCommits)
 						.then(() => {
+							// Sends an IFTTT notification to my phone
+							request(
+								"https://maker.ifttt.com/use/cIslveLjbfBDQsMx1-toPLh1VpRquJBDLp8NCddG2wN"
+							);
 							console.log("Completed!");
 						})
 						.catch(error => {
