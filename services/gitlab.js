@@ -8,8 +8,12 @@ const promiseSerial = funcs =>
 		Promise.resolve([])
 	);
 
-const yesterday = "2018-12-20";
-const today = dayjs().format("YYYY-MM-DD");
+const yesterday = dayjs()
+	.subtract(1, "day")
+	.format("YYYY-MM-DD");
+const today = dayjs()
+	.add(12, "hour")
+	.format("YYYY-MM-DD");
 let previousSha = "";
 
 module.exports = (req, res) => {
@@ -30,7 +34,7 @@ module.exports = (req, res) => {
 								message: `GitLab commit: ${push.push_data.commit_to} in ${
 									push.project_id
 								} by ${push.author.name} (@${push.author.username})`,
-								time: dayjs(push.created_at).add(i, "minutes")
+								time: dayjs(push.created_at).add(i, "minute")
 							});
 						}
 					}
@@ -59,15 +63,12 @@ module.exports = (req, res) => {
 							}
 						},
 						(error, response, body) => {
-							if (index > 1) return resolve();
-							previousSha = sha1(newString);
+							previousSha = body.content.sha;
 							console.log(
 								`(${index}/${commits.length}) ${
 									commit.message.split("GitLab commit: ")[1].split(" ")[0]
-								}`,
-								body
+								}`
 							);
-							res.json(body);
 							index++;
 							if (error) return reject();
 							resolve();
@@ -76,7 +77,7 @@ module.exports = (req, res) => {
 				})
 			);
 
-			// res.json(commits);
+			res.json(commits);
 
 			request(
 				{
@@ -90,7 +91,6 @@ module.exports = (req, res) => {
 				(error, response, body) => {
 					if (error) res.json("Error", error);
 					previousSha = JSON.parse(body).sha;
-					// res.json({ previousSha });
 					promiseSerial(githubCommits)
 						.then(() => {
 							console.log("Completed!");
