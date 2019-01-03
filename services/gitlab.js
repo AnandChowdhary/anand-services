@@ -1,5 +1,6 @@
 const request = require("request");
 const dayjs = require("dayjs");
+const sha1 = require("sha1");
 
 const promiseSerial = funcs =>
 	funcs.reduce(
@@ -9,6 +10,7 @@ const promiseSerial = funcs =>
 
 const yesterday = "2018-12-20";
 const today = dayjs().format("YYYY-MM-DD");
+let previousSha = "";
 
 module.exports = (req, res) => {
 	request(
@@ -37,16 +39,35 @@ module.exports = (req, res) => {
 			let index = 1;
 			const githubCommits = commits.map(commit => () =>
 				new Promise((resolve, reject) => {
+					const newString = commit.message;
 					request(
 						{
-							uri: `https://anandchowdhary.com`
+							method: "PUT",
+							uri: `https://api.github.com/repos/AnandChowdhary/gitlab-commits/contents/file.txt?access_token=${
+								process.env.GITHUB_TOKEN
+							}`,
+							body: {
+								content: Buffer.from(newString).toString("base64"),
+								sha: previousSha,
+								message: commit.message,
+								signature: process.env.PGP_SIGNATURE
+							},
+							json: true,
+							headers: {
+								// GitHub likes it if you set your username as the user-agent
+								"User-Agent": "AnandChowdhary"
+							}
 						},
 						(error, response, body) => {
+							if (index > 1) return resolve();
+							previousSha = sha1(newString);
 							console.log(
 								`(${index}/${commits.length}) ${
 									commit.message.split("GitLab commit: ")[1].split(" ")[0]
-								}`
+								}`,
+								body
 							);
+							res.json(body);
 							index++;
 							if (error) return reject();
 							resolve();
@@ -54,15 +75,31 @@ module.exports = (req, res) => {
 					);
 				})
 			);
-			res.json(commits);
 
-			promiseSerial(githubCommits)
-				.then(() => {
-					console.log("Completed!");
-				})
-				.catch(error => {
-					console.log("Error!", error);
-				});
+			// res.json(commits);
+
+			request(
+				{
+					uri:
+						"https://api.github.com/repos/AnandChowdhary/gitlab-commits/contents/file.txt?access_token=" +
+						process.env.GITHUB_TOKEN,
+					headers: {
+						"User-Agent": "AnandChowdhary"
+					}
+				},
+				(error, response, body) => {
+					if (error) res.json("Error", error);
+					previousSha = JSON.parse(body).sha;
+					// res.json({ previousSha });
+					promiseSerial(githubCommits)
+						.then(() => {
+							console.log("Completed!");
+						})
+						.catch(error => {
+							console.log("Error!", error);
+						});
+				}
+			);
 		}
 	);
 };
