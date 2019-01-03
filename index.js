@@ -3,6 +3,7 @@ const cors = require("cors");
 const RateLimit = require("express-rate-limit");
 const constants = require("./constants");
 const crons = require("./crons");
+require("dotenv").config();
 
 const app = express();
 app.use(express.json());
