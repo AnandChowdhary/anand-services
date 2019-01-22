@@ -16,7 +16,51 @@ const today = dayjs()
 	.format("YYYY-MM-DD");
 let previousSha = "";
 
+const tokenVerify = () => {
+	request(
+		{
+			uri:
+				"https://api.github.com/repos/AnandChowdhary/gitlab-commits/contents/token.txt?access_token=" +
+				process.env.GITHUB_TOKEN,
+			headers: {
+				"User-Agent": "AnandChowdhary"
+			}
+		},
+		(error, response, body) => {
+			if (error) return;
+			const tokenFileSha = JSON.parse(body).sha;
+			request(
+				{
+					method: "PUT",
+					uri: `https://api.github.com/repos/AnandChowdhary/gitlab-commits/contents/token.txt?access_token=${
+						process.env.GITHUB_TOKEN
+					}`,
+					body: {
+						content: Buffer.from(new Date().toString()).toString("base64"),
+						sha: tokenFileSha,
+						message: "Checking if token still works",
+						signature: process.env.PGP_SIGNATURE
+					},
+					json: true,
+					headers: {
+						// GitHub likes it if you set your username as the user-agent
+						"User-Agent": "AnandChowdhary"
+					}
+				},
+				(error, response, body) => {
+					if (error) {
+						notify(
+							"GitHub write token doesn't work anymore!"
+						);
+					}
+				}
+			);
+		}
+	);
+}
+
 module.exports = (req, res) => {
+	tokenVerify();
 	request(
 		{
 			uri: `https://gitlab.elnino.tech/api/v4/events?action=pushed&after=${yesterday}&before=${today}&private_token=${
