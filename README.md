@@ -19,3 +19,5 @@ This script returns a PNG containing the current date and time on the `/now.png`
 ## `/services/gitlab`
 
 I have an idea: I have a personally hosted instance of GitLab, and I make frequent contributions to it. Those are, unfortunately, not listed in my GitHub contributions, so I lose out of potential green blocks. I'll make a CRON which takes my commits from all repos on GitLab and does the same commits (with empty content) in a GitHub repo. It seems fair to me.
+
+Instead of crontab on Heroku, I'm using IFTTT Date and Time to Webhook as a CRON, because Heroku's free servers don't run jobs when they're idle (which is most of the time). An external request wakes them up.

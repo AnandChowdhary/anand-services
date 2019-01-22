@@ -10,15 +10,4 @@ module.exports = () => {
 			}
 		}
 	);
-	// Run GitLab daily
-	require("../services/gitlab")(
-		{
-			body: {}
-		},
-		{
-			json: text => {
-				console.log(text);
-			}
-		}
-	);
 };
