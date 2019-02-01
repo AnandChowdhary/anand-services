@@ -138,11 +138,6 @@ module.exports = (req, res) => {
 					previousSha = JSON.parse(body).sha;
 					promiseSerial(githubCommits)
 						.then(() => {
-							notify(
-								"Completed CRON job " +
-									"for GitLab; number of commits today: " +
-									commits.length
-							);
 							console.log("Completed!");
 						})
 						.catch(error => {
